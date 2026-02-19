@@ -42,8 +42,11 @@ const userSchema = new Schema(
         isVoted: {
             type: Boolean,
             default: false
+        },
+        refreshToken:{
+            type: String
         }
-    }
+    },{timestamps: true}
 )
 
 userSchema.pre("save", async function () {

@@ -16,6 +16,15 @@ const candidateSchema = new Schema (
             type: String,
             required: true,
         },
+        password:{
+            type: String,
+            required: true
+        },
+        productId :{
+            type: String,
+            require: true,
+            unique: true
+        },
         votes:[
             {
                 user: {
@@ -32,8 +41,11 @@ const candidateSchema = new Schema (
         voteCount: {
             type: Number,
             default: 0
+        },
+        refreshToken:{
+            type: String
         }
-    }
+    },{timestamps: true}
 )
 
 
