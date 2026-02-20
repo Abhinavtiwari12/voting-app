@@ -1,39 +1,40 @@
-import { Candidate } from "../models/candidate.model.js";
+import { Admin } from "../models/admin.model.js";
+
 
 
 export const findCandidate = async (condition) => {
-  const candidate = await Candidate.findOne(condition);
+  const admin = await Admin.findOne(condition);
 
-  if (!candidate) {
+  if (!admin) {
     return {
       success: false,
-      message: "No candidate exist with this detail",
+      message: "No admin exist with this detail",
       data: null,
     };
   }
 
   return {
     success: true,
-    message: "candidate already exists",
-    data: candidate,
+    message: "admin already exists",
+    data: admin,
   };
 };
 
 export const registerCandidate = async (createUser) => {
-  const candidate = await Candidate.create(createUser);
+  const admin = await Admin.create(createUser);
 
-  if (!candidate) {
+  if (!admin) {
     return {
       success: false,
-      message: "candidate not created",
+      message: "admin not created",
       data: null,
     };
   }
 
   return {
     success: true,
-    message: "candidate created successfully",
-    data: candidate,
+    message: "admin created successfully",
+    data: admin,
   };
 };
 
