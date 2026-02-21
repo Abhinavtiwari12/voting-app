@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 const userSchema = new Schema( 
     {
-        fullNmae:{
+        fullname:{
             type: String,
             required: true,
             index: true
@@ -24,11 +24,13 @@ const userSchema = new Schema(
         },
         phoneNumber:{
             type: String,
+            minlength: [ 10, 'Color must be at least 10 characters long' ],
         },
         addharNumber: {
             type: String,
             required: true,
             unique: true,
+            minlength: [ 12, 'Color must be at least 12 characters long' ],
         },
         password:{
             type: String,
@@ -42,6 +44,10 @@ const userSchema = new Schema(
         isVoted: {
             type: Boolean,
             default: false
+        },
+        votedCandidate: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Candidate"
         },
         refreshToken:{
             type: String
