@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/apiResponse.js"
-import { findCandidate, registerCandidate } from "../service/admin.service.js"
+import { findCandidates, registerCandidates } from "../service/admin.service.js"
 import { Admin } from "../models/admin.model.js"
 
 
@@ -26,10 +26,10 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 
 const registerNewAdmin = asyncHandler( async (req, res) => {
 
-    const {fullname, password, email, userName} = req.body
+    const {fullname, password, email, username} = req.body
 
     if(
-        [fullname, password, age, userName, email].some((field) => field?.trim() === "")
+        [fullname, password, username, email].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All field are require.")
     }
@@ -37,7 +37,7 @@ const registerNewAdmin = asyncHandler( async (req, res) => {
     const checkExistingUserCond = {
         email
     }
-    const existedUser = await findCandidate(checkExistingUserCond)
+    const existedUser = await findCandidates(checkExistingUserCond)
 
     if (existedUser.success) {
         throw new ApiError(409, existedUser.message)
@@ -45,13 +45,14 @@ const registerNewAdmin = asyncHandler( async (req, res) => {
 
     const createUser = {
         fullname,
-        userName,
+        username,
         email,
         password
 
     }
+    // console.log("details><><><><", createUser)
 
-    const registeredCandidate = await registerCandidate(createUser)
+    const registeredCandidate = await registerCandidates(createUser)
 
     return res.status(201).json(
         new ApiResponse(201, registeredCandidate.data, registeredCandidate.message)
@@ -68,9 +69,7 @@ const adminlogin = asyncHandler(async (req, res) => {
         throw new ApiError(401, "addharNumber is require.")
     }
 
-    const query = email
-
-    const admin = await Admin.findOne(query)
+    const admin = await Admin.findOne({ email })
 
     if (!admin) {
         throw new ApiError(400, "addharNumber or password is wrong.")
