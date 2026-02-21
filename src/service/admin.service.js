@@ -2,7 +2,7 @@ import { Admin } from "../models/admin.model.js";
 
 
 
-export const findCandidate = async (condition) => {
+export const findCandidates = async (condition) => {
   const admin = await Admin.findOne(condition);
 
   if (!admin) {
@@ -20,7 +20,7 @@ export const findCandidate = async (condition) => {
   };
 };
 
-export const registerCandidate = async (createUser) => {
+export const registerCandidates = async (createUser) => {
   const admin = await Admin.create(createUser);
 
   if (!admin) {
