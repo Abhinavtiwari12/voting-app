@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/apiResponse.js"
 import { Candidate } from "../models/candidate.model.js"
-import { findCandidate, registerCandidate } from "../service/admin.service.js"
+import { findCandidate, registerCandidate } from "../service/candidate.service.js"
 
 
 const registerNewCandidate = asyncHandler( async (req, res) => {
@@ -83,7 +83,7 @@ const deleteCandidate = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponse(200, product, "candidate delete sucessfull.")
+        new ApiResponse(200, candidate, "candidate delete sucessfull.")
     )
 })
 
