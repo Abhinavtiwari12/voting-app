@@ -3,6 +3,7 @@ import { ApiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/apiResponse.js"
 import { User } from "../models/user.model.js"
 import { findUser, registerUser } from "../service/user.service.js"
+import { Candidate } from "../models/candidate.model.js"
 
 
 
@@ -51,6 +52,7 @@ const registerNewUser = asyncHandler( async (req, res) => {
         phoneNumber,
         roal,
         address,
+        age,
         
     }
 
@@ -71,9 +73,7 @@ const userlogin = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Username or email is require.")
     }
 
-    const query = addharNumber
-
-    const user = await User.findOne(query)
+     const user = await User.findOne({ addharNumber })
 
     if (!user) {
         throw new ApiError(400, "username, email or password is wrong.")
@@ -156,8 +156,62 @@ const userlogout = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new apiResponse(200,{}, "User logout success."))
+    .json(new ApiResponse(200,{}, "User logout success."))
 
 })
 
-export { registerNewUser, userlogin, userProfile, changeUserPassword, userlogout }
+const voteCandidate = asyncHandler(async (req, res) => {
+
+    const { candidateId } = req.body
+
+    if (!candidateId) {
+        throw new ApiError(400, "Candidate id is required")
+    }
+
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    // Only voter allowed
+    if (user.roal !== "voter") {
+        throw new ApiError(403, "Only voters can vote")
+    }
+
+    // Check already voted
+    if (user.isVoted) {
+        throw new ApiError(400, "You have already voted")
+    }
+
+    const candidate = await Candidate.findOne({ candidateId })
+
+    if (!candidate) {
+        throw new ApiError(404, "Candidate not found")
+    }
+
+    // Atomic update
+    await Candidate.findOneAndUpdate(
+        { candidateId },
+        {
+            $inc: { voteCount: 1 },
+            $push: {
+                votes: {
+                    user: user._id,
+                    votedAt: new Date()
+                }
+            }
+        }
+    )
+
+    // Update user
+    user.isVoted = true
+    user.votedCandidate = candidate._id
+    await user.save({ validateBeforeSave: false })
+
+    return res.status(200).json(
+        new ApiResponse(200, {}, "Vote casted successfully")
+    )
+})
+
+export { registerNewUser, userlogin, userProfile, changeUserPassword, userlogout, voteCandidate }
