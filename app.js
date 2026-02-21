@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import userRouter from './src/router/user.router.js';
+import adminRouter from './src/router/admin.router.js'
 
 
 const app = express();
@@ -10,17 +12,14 @@ app.use(cors({
     credentials: true
 }))
 
-
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 app.use(cookieParser());
 
 
-app.get('/', (req, res) => {
-    res.send("helo world")
-})
+app.use('/api/user', userRouter);
+app.use('/api/admin', adminRouter);
 
 
 export { app }
