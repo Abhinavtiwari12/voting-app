@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 
@@ -10,25 +10,25 @@ const adminSchema = new Schema({
         type: String,
         unique: true,
         lowercase: true,
-        require: true,
+        required: true,
         trim: true,
         index: true
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         lowercase: true,
         unique: true,
         trim: true
     },
     password :{
         type: String,
-        require: true,
+        required: true,
         trim: true,
     },
     fullname: {
         type: String,
-        require: true,
+        required: true,
         index: true,
     },
     refreshToken:{
