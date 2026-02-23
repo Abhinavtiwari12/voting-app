@@ -70,19 +70,19 @@ const userlogin = asyncHandler(async (req, res) => {
     const {addharNumber, password} = req.body
 
     if (!addharNumber) {
-        throw new ApiError(401, "Username or email is require.")
+        throw new ApiError(401, "addharNumber is require.")
     }
 
      const user = await User.findOne({ addharNumber })
 
     if (!user) {
-        throw new ApiError(400, "username, email or password is wrong.")
+        throw new ApiError(400, "addharNumber or password is wrong.")
     }
 
     const checkPassword = await user.isPasswordCorrect(password)
 
     if (!checkPassword) {
-        throw new ApiError(400, "username, email or password is wrong.")
+        throw new ApiError(400, "addharNumber or password is wrong.")
     }
 
     const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
@@ -160,6 +160,40 @@ const userlogout = asyncHandler(async (req, res) => {
 
 })
 
+const getAllCandidates = asyncHandler(async (req, res) => {
+
+    const candidates = await Candidate.find({})
+        .select("fullname party age candidateId")
+
+    if (!candidates || candidates.length === 0) {
+        throw new ApiError(404, "No candidates found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, candidates, "Candidates fetched successfully")
+    )
+})
+
+const getSingleCandidate = asyncHandler(async (req, res) => {
+
+    const { candidateId } = req.body
+
+    if (!candidateId) {
+        throw new ApiError(400, "Candidate id is required")
+    }
+    
+    const candidate = await Candidate.findOne({ candidateId })
+        .select("fullName party age voteCount")
+
+    if (!candidate) {
+        throw new ApiError(404, "Candidate not found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, candidate, "Candidate details fetched")
+    )
+})
+
 const voteCandidate = asyncHandler(async (req, res) => {
 
     const { candidateId } = req.body
@@ -174,12 +208,10 @@ const voteCandidate = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found")
     }
 
-    // Only voter allowed
     if (user.roal !== "voter") {
         throw new ApiError(403, "Only voters can vote")
     }
 
-    // Check already voted
     if (user.isVoted) {
         throw new ApiError(400, "You have already voted")
     }
@@ -190,7 +222,6 @@ const voteCandidate = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Candidate not found")
     }
 
-    // Atomic update
     await Candidate.findOneAndUpdate(
         { candidateId },
         {
@@ -204,7 +235,6 @@ const voteCandidate = asyncHandler(async (req, res) => {
         }
     )
 
-    // Update user
     user.isVoted = true
     user.votedCandidate = candidate._id
     await user.save({ validateBeforeSave: false })
@@ -214,4 +244,12 @@ const voteCandidate = asyncHandler(async (req, res) => {
     )
 })
 
-export { registerNewUser, userlogin, userProfile, changeUserPassword, userlogout, voteCandidate }
+export { registerNewUser, 
+    userlogin, 
+    userProfile, 
+    changeUserPassword, 
+    userlogout, 
+    voteCandidate, 
+    getAllCandidates,
+    getSingleCandidate
+}
