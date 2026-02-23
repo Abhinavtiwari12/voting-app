@@ -5,7 +5,9 @@ import {
     userProfile, 
     changeUserPassword, 
     userlogout, 
-    voteCandidate  
+    voteCandidate,  
+    getSingleCandidate,
+    getAllCandidates
 } from "../controllers/user.controller.js";
 import { verifyUserJwt } from "../midleware/autho.midleware.js";
 
@@ -19,8 +21,9 @@ router.route('/userlogin').post(userlogin)
 router.route('/userlogout').post(verifyUserJwt, userlogout)
 router.route('/changeUserPassword').post(verifyUserJwt, changeUserPassword)
 router.route("/userProfile").post(verifyUserJwt, userProfile)
+router.route('/getAllCandidates').get(verifyUserJwt, getAllCandidates)
+router.route('/getSingleCandidate').get(verifyUserJwt, getSingleCandidate)
 router.route('/voteCandidate').post(verifyUserJwt, voteCandidate)
 
 
-// export default router
 export default router
