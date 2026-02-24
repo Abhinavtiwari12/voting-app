@@ -145,4 +145,23 @@ const getWinner = asyncHandler(async (req, res) => {
     )
 })
 
-export { registerNewAdmin, adminlogin, adminProfile, adminlogout, getWinner }
+
+const getCandidateVoteDetails = asyncHandler(async (req, res) => {
+
+    const { candidateId } = req.query
+
+    console.log("params><><>><><,", candidateId)
+
+    const candidate = await Candidate.findOne({ candidateId })
+        .select("votes voteCount")
+
+    if (!candidate) {
+        throw new ApiError(404, "Candidate not found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, candidate.votes, "Vote details fetched")
+    )
+})
+
+export { registerNewAdmin, adminlogin, adminProfile, adminlogout, getWinner, getCandidateVoteDetails }
