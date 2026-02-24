@@ -3,6 +3,7 @@ import { ApiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/apiResponse.js"
 import { findCandidates, registerCandidates } from "../service/admin.service.js"
 import { Admin } from "../models/admin.model.js"
+import { Candidate } from "../models/candidate.model.js"
 
 
 
@@ -128,4 +129,20 @@ const adminlogout = asyncHandler(async (req, res) => {
 
 })
 
-export { registerNewAdmin, adminlogin, adminProfile, adminlogout }
+
+const getWinner = asyncHandler(async (req, res) => {
+
+    const winner = await Candidate.findOne({})
+        .sort({ voteCount: -1 })
+        .select("fullName party voteCount")
+
+    if (!winner) {
+        throw new ApiError(404, "No candidates found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, winner, "Current leading candidate")
+    )
+})
+
+export { registerNewAdmin, adminlogin, adminProfile, adminlogout, getWinner }
