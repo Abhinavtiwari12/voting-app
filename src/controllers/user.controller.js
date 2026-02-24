@@ -176,7 +176,7 @@ const getAllCandidates = asyncHandler(async (req, res) => {
 
 const getSingleCandidate = asyncHandler(async (req, res) => {
 
-    const { candidateId } = req.body
+    const { candidateId } = req.query
 
     if (!candidateId) {
         throw new ApiError(400, "Candidate id is required")
