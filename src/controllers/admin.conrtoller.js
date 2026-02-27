@@ -164,4 +164,36 @@ const getCandidateVoteDetails = asyncHandler(async (req, res) => {
     )
 })
 
-export { registerNewAdmin, adminlogin, adminProfile, adminlogout, getWinner, getCandidateVoteDetails }
+const getLiveVoteStatus = asyncHandler(async (req, res) => {
+
+    const candidates = await Candidate.find({})
+        .select("fullname party voteCount candidateId")
+
+    const totalVotes = await Candidate.aggregate([
+        {
+            $group: {
+                _id: null,
+                total: { $sum: "$voteCount" }
+            }
+        }
+    ])
+
+    const total = totalVotes[0]?.total || 0
+
+    const result = candidates.map(candidate => ({
+        fullname: candidate.fullname,
+        party: candidate.party,
+        voteCount: candidate.voteCount,
+        candidateId: candidate.candidateId
+    }))
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            totalVotes: total,
+            candidates: result
+        }, "Live vote status fetched successfully")
+    )
+})
+
+
+export { registerNewAdmin, adminlogin, adminProfile, adminlogout, getWinner, getCandidateVoteDetails, getLiveVoteStatus }
